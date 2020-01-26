@@ -2,13 +2,23 @@ package com.geekteck.testcalculator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     TextView textView;
@@ -18,13 +28,12 @@ public class MainActivity extends AppCompatActivity {
     public static String result_key = "RESULT_KEY";
 
 
+    private SendResult actionSender;
+
     Double firstValues;
     Double secondValues;
     String operation;
     Double result;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         textView = findViewById(R.id.result_txt_view);
-
     }
-
 
     public void onNumbersClick(View view) {
         switch (view.getId()) {
@@ -140,19 +147,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void send() {
-        String resu = textView.getText().toString();
-        Intent intent = new Intent(this, LaunchActivity.class);
-        intent.putExtra("result", resu);
-        startActivityForResult(intent, 42);
+    public void sendVal(SendResult actionSend) {
+        this.actionSender = actionSend;
     }
 
-    public void change_window(View view) {
-        String resu = textView.getText().toString();
-        Intent intent = new Intent(this, LaunchActivity.class);
-        intent.putExtra("result", resu);
-        startActivityForResult(intent, 42);
+    public void sendInHistory(View view) {
+        String answer = textView.getText().toString();
+        actionSender.send(answer);
     }
 
+    public void change_btn_fragment(View view) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.container, new ButtonFragment());
+        transaction.commit();
+    }
 
+    public void change_btn_history_framgent(View view) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.container, new HistoryFragment());
+        transaction.commit();
+    }
 }
+
+
